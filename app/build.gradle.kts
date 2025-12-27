@@ -10,7 +10,7 @@ android {
         applicationId = "cl.rdrp.planilla_shopper"
         minSdk = 26
         targetSdk = 34
-        versionCode = 21
+        versionCode = 22
         versionName = "1.0.5"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"

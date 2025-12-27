@@ -67,4 +67,7 @@ public interface CombustibleDao {
     @Query("SELECT COUNT(*) FROM combustible WHERE fecha BETWEEN :desde AND :hasta")
     int countRecargasRango(String desde, String hasta);
 
+    @Query("UPDATE combustible SET fecha = REPLACE(fecha,'/','-') WHERE fecha LIKE '%/%'")
+    void normalizarFechasGuardadas();
+
 }
