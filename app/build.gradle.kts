@@ -10,8 +10,8 @@ android {
         applicationId = "cl.rdrp.planilla_shopper"
         minSdk = 26
         targetSdk = 34
-        versionCode = 8
-        versionName = "1.0"
+        versionCode = 21
+        versionName = "1.0.5"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -51,6 +51,7 @@ dependencies {
     implementation(libs.coordinatorlayout)
     implementation(libs.drawerlayout)
     implementation(libs.androidx.coordinatorlayout)
+    implementation(libs.gson)
     annotationProcessor(libs.room.compiler)
     annotationProcessor(libs.room.compiler)
 

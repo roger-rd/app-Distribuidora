@@ -14,8 +14,13 @@
     <color name="blue_secondaryContainer">#D0E4F9</color>
     <color name="blue_onSecondaryContainer">#0A2E52</color>
 
-    <color name="blue_surface">#C8E1F0</color>
-    <color name="blue_onSurface">#2E2D2D</color>
+    <color name="blue_surface">#FFFFFF</color>
+    <color name="blue_onSurface">#1E1E1E</color>
     <color name="blue_background">#F7FAFF</color>
     <color name="blue_onBackground">#1E1E1E</color>
+
+    <color name="pie_liquido">#2E7D32</color>     <!-- verde -->
+    <color name="pie_comision">#1A73E8</color>    <!-- azul -->
+    <color name="pie_combustible">#D32F2F</color> <!-- rojo -->
+
 </resources>

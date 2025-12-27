@@ -1,5 +1,9 @@
 package cl.rdrp.planilla_shopper.ui;
 
+import static cl.rdrp.planilla_shopper.util.Config.VALOR_UNIT_KM;
+import static cl.rdrp.planilla_shopper.util.Config.VALOR_UNIT_SKU;
+import static cl.rdrp.planilla_shopper.util.Config.basePorSku;   // 👈 usamos SIEMPRE el del Config
+
 import android.app.DatePickerDialog;
 import android.os.Bundle;
 
@@ -20,7 +24,10 @@ import java.util.Locale;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
+import cl.rdrp.planilla_shopper.R;
 import cl.rdrp.planilla_shopper.data.AppDatabase;
+import cl.rdrp.planilla_shopper.data.BonoDao;
+import cl.rdrp.planilla_shopper.data.BonoExtra;
 import cl.rdrp.planilla_shopper.data.Registro;
 import cl.rdrp.planilla_shopper.data.RegistroDao;
 import cl.rdrp.planilla_shopper.databinding.ActivityDashboardBinding;
@@ -30,13 +37,9 @@ public class DashboardActivity extends AppCompatActivity {
 
     private ActivityDashboardBinding vb;
     private RegistroDao dao;
+    private BonoDao bonoDao;
     private final NumberFormat money = NumberFormat.getCurrencyInstance(new Locale("es","CL"));
     private final Executor exec = Executors.newSingleThreadExecutor();
-
-    // --- Constantes de negocio (mismas que el Adapter) ---
-    private static final int    PEDIDO_FIJO     = 1600;   // $
-    private static final int    VALOR_UNIT_SKU  = 60;     // $ por SKU
-    private static final double VALOR_UNIT_KM   = 232.0;  // $ por KM
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,7 +47,12 @@ public class DashboardActivity extends AppCompatActivity {
         vb = ActivityDashboardBinding.inflate(getLayoutInflater());
         setContentView(vb.getRoot());
 
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
+
         dao = AppDatabase.get(this).registroDao();
+        bonoDao = AppDatabase.get(this).bonoDao();
 
         // Fecha inicial
         TextInputEditText et = vb.etFechaDash;
@@ -96,72 +104,87 @@ public class DashboardActivity extends AppCompatActivity {
     }
 
     private void cargarResumen(String fechaISO) {
-        final String f = (fechaISO == null) ? "" : fechaISO.trim();
         final String iso = (fechaISO == null) ? "" : fechaISO.trim();
         final String legacy = toLegacy(iso);
 
         exec.execute(() -> {
-            // Traer registros del día
-            List<Registro> items = dao.listByFechaCompat(iso,legacy);
+            // Registros del día
+            List<Registro> items = dao.listByFechaCompat(iso, legacy);
 
             // Acumuladores de dinero
-            long totalDia     = 0L;
-            int  totalBase$   = 0;
-            int  totalPedido$ = 0;
-            int  totalSku$    = 0;
-            long totalKm$     = 0L;
+            long totalDia      = 0L;
+            long totalBonosKm  = 0L;  // bonos automáticos por km
+            long totalBonosExt = 0L;  // bonos extras (popup)
 
             // Métricas no monetarias
-            int    pedidos     = items.size(); // cantidad de registros
-            int    totalSkuQty = 0;
-            double totalKm     = 0.0;          // km reales (double)
+            int    pedidos = items.size();
+            double totalKm = 0.0;
 
             for (Registro r : items) {
                 Integer skuQtyI = parseIntOnlyDigits(r.sku);
                 int skuQty = (skuQtyI == null ? 0 : skuQtyI);
 
-                int  base   = basePorSku(skuQty);
-                int  pedido = PEDIDO_FIJO;
+                int  base   = basePorSku(skuQty);               // 👈 ahora viene de Config
                 int  sSku   = skuQty * VALOR_UNIT_SKU;
-                long sKm    = Math.round(r.km * VALOR_UNIT_KM); // KM decimal → pesos
+                long sKm    = Math.round(r.km * VALOR_UNIT_KM);
 
-                long total = (long) base + pedido + sSku + sKm;
+                // bono km según fecha (solo domingo, lunes, martes)
+                int bonoKm = Config.calcularBonoKm(r.km, r.fecha);
+                long total = (long) base + sSku + sKm + bonoKm; // mismo total que en las cards
 
-                // Acumular
-                totalBase$   += base;
-                totalPedido$ += pedido;
-                totalSku$    += sSku;
-                totalKm$     += sKm;
                 totalDia     += total;
-
-                totalSkuQty  += skuQty;
                 totalKm      += r.km;
+                totalBonosKm += bonoKm;
             }
 
+            // Bonos extras guardados con el popup "+ bono"
+            List<BonoExtra> bonos = bonoDao.listByFecha(iso);
+            for (BonoExtra b : bonos) {
+                totalBonosExt += b.monto;
+            }
+
+            // sumar bonos extra al total del día
+            totalDia += totalBonosExt;
+
             // Costos y comisiones (según tu Config)
-            long costoCombustible = Math.round((totalKm / Config.RENDIMIENTO_KM_POR_LITRO) * Config.PRECIO_LITRO);
-            long comision         = Math.round(totalDia * Config.COMISION_PORC);
-            long liquido          = totalDia - comision - costoCombustible;
+            long costoCombustible = Math.round(
+                    (totalKm / Config.RENDIMIENTO_KM_POR_LITRO) * Config.PRECIO_LITRO
+            );
+            long comision = Math.round(totalDia * Config.COMISION_PORC);
+            long liquido  = totalDia - comision - costoCombustible;
 
             // Copias finales para la UI
             final int    pedidosF          = pedidos;
-            final long   totalDiaF         = totalDia;
             final double totalKmF          = totalKm;
+            final long   totalDiaF         = totalDia;
             final long   costoCombustibleF = costoCombustible;
             final long   comisionF         = comision;
             final long   liquidoF          = liquido;
+            final long   totalBonosKmF     = totalBonosKm;
+            final long   totalBonosExtF    = totalBonosExt;
 
             runOnUiThread(() -> {
                 money.setMaximumFractionDigits(0);
 
                 vb.tvPedidosDia.setText("Pedidos del día: " + pedidosF);
-                vb.tvTotalDia.setText("Total del día: " + money.format(totalDiaF));
+
+                // Texto del total, mostrando también los bonos
+                String txtTotal = "Total del día: " + money.format(totalDiaF);
+                long totalBonos = totalBonosKmF + totalBonosExtF;
+                if (totalBonos > 0) {
+                    txtTotal += " (bonos: " + money.format(totalBonos) + ")";
+                }
+                vb.tvTotalDia.setText(txtTotal);
 
                 String kmTxt = String.format(Locale.US, "%.2f", totalKmF);
-                vb.tvCombustible.setText("Combustible: " + kmTxt + " km (" + money.format(costoCombustibleF) + ")");
+                vb.tvCombustible.setText(
+                        "Combustible: " + kmTxt + " km (" + money.format(costoCombustibleF) + ")"
+                );
 
-                vb.tvComision.setText(String.format(Locale.US, "%.1f%%: %s",
-                        (Config.COMISION_PORC * 100.0), money.format(comisionF)));
+                vb.tvComision.setText(
+                        String.format(Locale.US, "%.1f%%: %s",
+                                (Config.COMISION_PORC * 100.0), money.format(comisionF))
+                );
 
                 vb.tvLiquido.setText("Líquido: " + money.format(liquidoF));
 
@@ -172,19 +195,78 @@ public class DashboardActivity extends AppCompatActivity {
 
     // ===================== Gráfico =====================
 
-    private void drawPie(long liquido, long comision, long combustible){
+    private void drawPie(long liquido, long comision, long combustible) {
         PieChart chart = vb.pieChart;
-        ArrayList<PieEntry> entries = new ArrayList<>();
-        entries.add(new PieEntry((float) liquido,      "Líquido"));
-        entries.add(new PieEntry((float) comision,     "Comisión"));
-        entries.add(new PieEntry((float) combustible,  "Combustible"));
+
+        if (liquido <= 0 && comision <= 0 && combustible <= 0) {
+            chart.clear();
+            chart.getDescription().setEnabled(false);
+            chart.setCenterText("Sin datos");
+            chart.setCenterTextSize(14f);
+            chart.invalidate();
+            return;
+        }
+
+        List<PieEntry> entries = new ArrayList<>();
+        if (liquido > 0)     entries.add(new PieEntry((float) liquido,     "Líquido"));
+        if (comision > 0)    entries.add(new PieEntry((float) comision,    "Comisión"));
+        if (combustible > 0) entries.add(new PieEntry((float) combustible, "Combustible"));
 
         PieDataSet ds = new PieDataSet(entries, "");
         ds.setSliceSpace(2f);
+        ds.setValueTextSize(12f);
+        ds.setValueTextColor(android.graphics.Color.WHITE);
 
-        chart.setData(new PieData(ds));
-        chart.getDescription().setEnabled(false);
+        ds.setColors(
+                androidx.core.content.ContextCompat.getColor(this, R.color.pie_liquido),
+                androidx.core.content.ContextCompat.getColor(this, R.color.pie_comision),
+                androidx.core.content.ContextCompat.getColor(this, R.color.pie_combustible)
+        );
+
+        // calcular total para porcentajes
+        double totalAll = 0;
+        for (PieEntry e : entries) totalAll += e.getValue();
+        final double totalAllF = totalAll;
+
+        final NumberFormat clp = NumberFormat.getCurrencyInstance(new Locale("es","CL"));
+        clp.setMaximumFractionDigits(0);
+
+        ds.setValueFormatter(new com.github.mikephil.charting.formatter.ValueFormatter() {
+            @Override
+            public String getFormattedValue(float v) {
+                double val = (double) v;
+                double pct = (totalAllF <= 0) ? 0 : (val / totalAllF * 100.0);
+                return clp.format(val) + String.format(Locale.US, " (%.0f%%)", pct);
+            }
+        });
+
+        PieData data = new PieData(ds);
+        chart.setData(data);
+
         chart.setUsePercentValues(false);
+        chart.getDescription().setEnabled(false);
+        chart.setDrawEntryLabels(true);
+        chart.setEntryLabelTextSize(11f);
+        chart.setEntryLabelColor(android.graphics.Color.BLACK);
+
+        chart.setDrawHoleEnabled(true);
+        chart.setHoleRadius(55f);
+        chart.setTransparentCircleRadius(60f);
+        chart.setHoleColor(android.graphics.Color.TRANSPARENT);
+        chart.setCenterText("Líquido\n" + clp.format((double) liquido));
+        chart.setCenterTextSize(14f);
+
+        com.github.mikephil.charting.components.Legend legend = chart.getLegend();
+        legend.setEnabled(true);
+        legend.setVerticalAlignment(com.github.mikephil.charting.components.Legend.LegendVerticalAlignment.BOTTOM);
+        legend.setHorizontalAlignment(com.github.mikephil.charting.components.Legend.LegendHorizontalAlignment.CENTER);
+        legend.setOrientation(com.github.mikephil.charting.components.Legend.LegendOrientation.HORIZONTAL);
+        legend.setDrawInside(false);
+        legend.setTextSize(12f);
+
+        chart.setRotationEnabled(false);
+        chart.animateY(700);
+        chart.highlightValues(null);
         chart.invalidate();
     }
 
@@ -203,23 +285,17 @@ public class DashboardActivity extends AppCompatActivity {
         return cs == null ? "" : cs.toString();
     }
 
-    private static int basePorSku(int skuQty) {
-        if (skuQty <= 0)   return 0;
-        if (skuQty <= 10)  return 1000;
-        if (skuQty <= 30)  return 1400;
-        if (skuQty <= 50)  return 2400;
-        if (skuQty <= 70)  return 3400;
-        if (skuQty <= 90)  return 5400;
-        if (skuQty <= 125) return 6400;
-        if (skuQty <= 150) return 7400;
-        return 8400; // >= 151
-    }
-
     /** Extrae solo dígitos de un String y los parsea a int */
     private static Integer parseIntOnlyDigits(String s) {
         if (s == null) return null;
         s = s.trim().replaceAll("[^0-9]", "");
         if (s.isEmpty()) return null;
         try { return Integer.parseInt(s); } catch (NumberFormatException e) { return null; }
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        getOnBackPressedDispatcher().onBackPressed();
+        return true;
     }
 }

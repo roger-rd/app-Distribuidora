@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+android:orientation="vertical"
+android:padding="16dp"
+android:layout_width="match_parent"
+android:layout_height="wrap_content">
+
+<!-- fecha -->
+<com.google.android.material.textfield.TextInputLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:hint="Fecha (yyyy/MM/dd)">
+    <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/etFechaEdit"
+        android:inputType="date"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+</com.google.android.material.textfield.TextInputLayout>
+
+
+<!-- Bencinera -->
+<com.google.android.material.textfield.TextInputLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:hint="Bencinera">
+    <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/etBencineraEdit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Bencinera"
+        android:layout_marginTop="8dp" />
+
+</com.google.android.material.textfield.TextInputLayout>
+
+<com.google.android.material.textfield.TextInputLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:hint="Tipo Bencina">
+    <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/etTipoEdit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Tipo (93, 95, 97, Diésel)"
+        android:layout_marginTop="8dp" />
+</com.google.android.material.textfield.TextInputLayout>
+
+<!-- KM anterior-->
+<com.google.android.material.textfield.TextInputLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="12dp"
+    android:hint="KM Anterior">
+    <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/etKmAntEdit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="KM anterior"
+        android:inputType="numberDecimal"
+        android:layout_marginTop="8dp"/>
+</com.google.android.material.textfield.TextInputLayout>
+
+<!-- KM Actual-->
+<com.google.android.material.textfield.TextInputLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="12dp"
+    android:hint="KM Actual">
+    <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/etKmActEdit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="KM actual"
+        android:inputType="numberDecimal"
+        android:layout_marginTop="8dp" />
+</com.google.android.material.textfield.TextInputLayout>
+
+<!-- Valor por litro -->
+<com.google.android.material.textfield.TextInputLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="12dp"
+    android:hint="Valor por litro">
+    <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/etValorEdit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Valor por litro"
+        android:inputType="numberDecimal"
+        android:layout_marginTop="8dp" />
+</com.google.android.material.textfield.TextInputLayout>
+
+<!-- Cantidad Producto -->
+<com.google.android.material.textfield.TextInputLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="12dp"
+    android:hint="Litros">
+    <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/etLitrosEdit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Litros"
+        android:inputType="numberDecimal"
+        android:layout_marginTop="8dp"/>
+</com.google.android.material.textfield.TextInputLayout>
+
+</LinearLayout>

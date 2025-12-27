@@ -29,11 +29,21 @@
             android:layout_marginTop="4dp" />
 
         <TextView
+            android:id="@+id/tvBonoKm"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Bono KM: $0"
+            android:textColor="@color/blue_onSurface"
+            android:layout_marginTop="2dp" />
+
+        <TextView
             android:id="@+id/tvMonto"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
             android:textSize="16sp"
             android:textStyle="bold" />
+
+
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

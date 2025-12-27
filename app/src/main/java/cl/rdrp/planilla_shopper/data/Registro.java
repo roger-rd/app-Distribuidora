@@ -8,7 +8,7 @@ import androidx.room.PrimaryKey;
 
 @Entity(
         tableName = "registro",
-        indices = {@Index(value = {"fecha","local"}, unique = true)}
+        indices = {@Index(value = {"fecha","local"}, unique = false)}
 )
 public class Registro {
     @PrimaryKey(autoGenerate = true)

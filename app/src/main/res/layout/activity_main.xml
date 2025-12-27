@@ -65,16 +65,39 @@
                         android:inputType="none" />
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <com.google.android.material.textfield.TextInputLayout
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Local">
+                    android:orientation="horizontal"
+                    android:weightSum="2">
 
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/etLocal"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
-                </com.google.android.material.textfield.TextInputLayout>
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:hint="Local">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etLocal"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:digits="0123456789"
+                            android:inputType="number" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <Button
+                        android:id="@+id/btnAgregarBono"
+                        android:layout_width="wrap_content"
+                        android:layout_height="48dp"
+                        android:layout_marginTop="-1dp"
+                        android:layout_marginStart="50dp"
+                        android:backgroundTint="@color/blue_secondary"
+                        android:text="+ bono"
+                        android:textColor="@color/blue_onSecondary"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
@@ -87,7 +110,7 @@
                         android:layout_height="wrap_content"
                         android:digits="0123456789"
                         android:inputType="number"
-                        android:maxLength="11" />
+                        android:maxLength="12" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <LinearLayout
@@ -114,7 +137,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:hint="Cant">
+                        android:hint="Cantidad articulos">
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/etCant"
@@ -193,6 +216,16 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvBonos"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:nestedScrollingEnabled="false"/>
+
+
+
             </LinearLayout>
         </ScrollView>
 
@@ -206,7 +239,7 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        android:background="#F7FAFF"
+
         app:headerLayout="@layout/nav_header"
         app:menu="@menu/drawer_menu" />
 

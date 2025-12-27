@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="12dp"
+    android:background="@color/blue_surface"
+    android:layout_marginBottom="8dp">
+
+    <!-- Contenido (texto) ocupa todo el ancho menos el botón -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tvBonoLinea1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="SG: 123456 · Bono AM"
+            android:textColor="@color/blue_onSurface"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/tvBonoMonto"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="$5.000"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:layout_marginTop="4dp"
+            android:textColor="@color/blue_onSurface" />
+    </LinearLayout>
+
+    <!-- Botón borrar -->
+    <ImageButton
+        android:id="@+id/btnDeleteBono"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="8dp"
+        android:background="@android:color/transparent"
+        android:src="@android:drawable/ic_menu_delete"
+        android:contentDescription="Eliminar bono" />
+</LinearLayout>

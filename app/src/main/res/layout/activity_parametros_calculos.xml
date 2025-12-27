@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <!-- Separador -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="16dp" />
+
+        <!-- Ventana: Parámetros de cálculo -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/card_parametros"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:foreground="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Parámetros de cálculo"
+                    android:textStyle="bold"
+                    android:textSize="16sp" />
+                <TextView
+                    android:id="@+id/tvValorSku"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Valor por SKU: $61" />
+
+                <TextView
+                    android:id="@+id/tvValorKm"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Valor por KM: $234 " />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/card_parametros_base"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:foreground="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Parámetros de cálculo Base"
+                    android:textStyle="bold"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/mill600"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="De 1 a 10 SKU : $2.623" />
+
+                <TextView
+                    android:id="@+id/tresk"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="De 11 a 30 SKU : $3.026" />
+
+                <TextView
+                    android:id="@+id/cuatrok"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="De 31 a 50 SKU : $4.035 " />
+                <TextView
+                    android:id="@+id/cincok"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="De 51 a 70 SKU : $5.044 " />
+                <TextView
+                    android:id="@+id/sietek"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="De 71 a 90 SKU : $7.061 " />
+                <TextView
+                    android:id="@+id/ochok"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="De 91 a 125 SKU : $8.070 " />
+                <TextView
+                    android:id="@+id/muevek"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="126 de 150 SKU : $9.079 " />
+                <TextView
+                    android:id="@+id/diezk"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Mas de 151 SKU : $10.088 " />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+    </LinearLayout>
+</ScrollView>

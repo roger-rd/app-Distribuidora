@@ -6,11 +6,15 @@ import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Transaction;
 
+import java.util.List;
+
 
 @Dao
 public interface RegistroDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     long insertIgnore(Registro r);
+
+
 
     @Query("UPDATE registro SET fecha = :fecha, sku = :sku, km = :km, sg = :sg, ventana = :ventana, cant = :cant  WHERE id = :id")
     int update(long id, String fecha, String sku, double km, long sg, int ventana, int cant);
@@ -33,6 +37,16 @@ public interface RegistroDao {
 
     @Query("SELECT * FROM registro WHERE fecha BETWEEN :desde AND :hasta ORDER BY fecha DESC")
     java.util.List<Registro> listByRangoFechas(String desde, String hasta);
+
+    
+    @Query("SELECT * FROM registro")
+    List<Registro> getAllSync();
+
+    @Query("DELETE FROM registro")
+    void deleteAllSync();
+
+    @Insert
+    void insertAllSync(List<Registro> registros);
 
 
 

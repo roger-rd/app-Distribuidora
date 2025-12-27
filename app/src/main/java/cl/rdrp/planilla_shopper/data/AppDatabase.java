@@ -9,30 +9,95 @@ import androidx.room.RoomDatabase;
 import androidx.room.migration.Migration;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
-@Database(entities = {Registro.class}, version = 6, exportSchema = false)
+@Database(
+        entities = {
+                Registro.class,
+                Combustible.class,
+                BonoExtra.class       // 👈 NUEVA
+        },
+        version = 10,               // 👈 subimos versión
+        exportSchema = false
+)
 public abstract class AppDatabase extends RoomDatabase {
-    private static volatile AppDatabase INSTANCE;
-    public abstract RegistroDao registroDao();
 
-    //MIGRACION 4 > 5 agg col cant
-    //public static final Migration MIGRATION_5_6 = new Migration(5,6) {
-    //    @Override
-        //public void migrate(@NonNull SupportSQLiteDatabase db ) {
-     //       db.execSQL("ALTER TABLE registro ADD COLUMN cant INTERGER NOT NULL DEFAULT 0");
-      //  }
-    //};
+    private static volatile AppDatabase INSTANCE;
+
+    public abstract RegistroDao registroDao();
+    public abstract CombustibleDao combustibleDao();
+    public abstract BonoDao bonoDao();          // 👈 NUEVO
+
+    // 6 → 7
+    static final Migration MIGRATION_6_7 = new Migration(6, 7) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase db) {
+            db.execSQL("DROP INDEX IF EXISTS `index_registro_fecha_local`");
+            db.execSQL("CREATE INDEX IF NOT EXISTS `index_registro_fecha_local` " +
+                    "ON registro (fecha, local)");
+        }
+    };
+
+    // 7 → 8 combustible
+    static final Migration MIGRATION_7_8 = new Migration(7, 8) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase db) {
+            db.execSQL(
+                    "CREATE TABLE IF NOT EXISTS combustible (" +
+                            "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                            "fecha TEXT, " +
+                            "bencinera TEXT, " +
+                            "tipo TEXT, " +
+                            "kmAnterior REAL NOT NULL, " +
+                            "kmActual REAL NOT NULL, " +
+                            "kmRecorridos REAL NOT NULL, " +
+                            "valorLitro REAL NOT NULL, " +
+                            "litros REAL NOT NULL, " +
+                            "totalPagado REAL NOT NULL" +
+                            ")"
+            );
+        }
+    };
+
+    // 8 → 9 (ya la tenías)
+    static final Migration MIGRATION_8_9 = new Migration(8, 9) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase db) {
+            try {
+                db.execSQL("ALTER TABLE combustible ADD COLUMN fecha TEXT");
+            } catch (Exception ignored) {}
+        }
+    };
+
+    // 9 → 10  👉 tabla de bonos
+    static final Migration MIGRATION_9_10 = new Migration(9, 10) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase db) {
+            db.execSQL(
+                    "CREATE TABLE IF NOT EXISTS bonos (" +
+                            "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                            "fecha TEXT, " +
+                            "sg TEXT, " +
+                            "descripcion TEXT, " +
+                            "monto INTEGER NOT NULL" +
+                            ")"
+            );
+        }
+    };
 
     public static AppDatabase get(Context ctx) {
         if (INSTANCE == null) {
             synchronized (AppDatabase.class) {
                 if (INSTANCE == null) {
                     INSTANCE = Room.databaseBuilder(
-                            ctx.getApplicationContext(),
-                            AppDatabase.class,
-                            "foxer.db"
-                    )
-                            //.fallbackToDestructiveMigration()
-                            //.addMigrations(MIGRATION_4_5)
+                                    ctx.getApplicationContext(),
+                                    AppDatabase.class,
+                                    "foxer.db"
+                            )
+                            .addMigrations(
+                                    MIGRATION_6_7,
+                                    MIGRATION_7_8,
+                                    MIGRATION_8_9,
+                                    MIGRATION_9_10   // 👈 importante
+                            )
                             .build();
                 }
             }

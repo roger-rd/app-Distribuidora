@@ -8,18 +8,42 @@
             android:icon="@android:drawable/ic_menu_month" />
 
         <item
+            android:id="@+id/nav_calculo"
+            android:title="Calculos Parametros"
+            android:icon="@android:drawable/ic_menu_view" />
+
+        <item
             android:id="@+id/nav_contact"
             android:title="Contáctame (personaliza tu app)"
             android:icon="@android:drawable/ic_menu_send" />
+
+        <item
+            android:id="@+id/nav_bencina"
+            android:title="Registro de bencina"
+            android:icon="@android:drawable/ic_menu_compass" />
+
+        <item
+            android:id="@+id/nav_backup"
+            android:title="Copia de seguridad"
+            android:icon="@android:drawable/ic_menu_manage" />
+        <item
+            android:id="@+id/nav_historial_bencina"
+            android:title="Historial combustible"
+            android:icon="@android:drawable/ic_menu_recent_history"/>
     </group>
 
-    <item android:title=" " /> <!-- separador -->
+    <item android:title=" " />
+    <item android:title=" " />
+    <item android:title=" " />
+    <item android:title=" " />
+    <item android:title=" " />
 
     <group android:checkableBehavior="none">
         <item
             android:id="@+id/nav_footer_owner"
             android:enabled="false"
             android:title="Roger Rodríguez — RDRP" />
+
         <item
             android:id="@+id/nav_footer_copy"
             android:enabled="false"

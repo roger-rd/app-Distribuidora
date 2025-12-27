@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fillViewport="true"
     android:padding="16dp">
 
     <LinearLayout
@@ -36,12 +38,12 @@
             android:layout_width="match_parent"
             android:layout_height="12dp" />
 
-        <!-- Tabla de métricas (2 columnas) -->
+        <!-- Resumen mensual (dos columnas: etiqueta | valor) -->
         <GridLayout
+            android:id="@+id/gridResumenMensual"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:columnCount="2"
-            android:rowCount="8">
+            android:columnCount="2">
 
             <!-- Total pedidos mes -->
             <TextView
@@ -155,18 +157,102 @@
                 android:textStyle="bold"
                 android:textColor="#1A73E8"
                 android:text="0" />
-
-            <!-- Cantidad pesos del mes -->
-
-            <TextView
-                android:id="@+id/tvTotalMesPesos"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:textStyle="bold"
-                android:text="Total $ del mes: $0" />
-
         </GridLayout>
+
+        <!-- Separador -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="16dp" />
+
+        <!-- Ventana: Parámetros de cálculo -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/card_parametros"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:foreground="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"
+            app:cardUseCompatPadding="true"
+            app:cardCornerRadius="16dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Líquido del mes"
+                    android:textStyle="bold"
+                    android:textSize="16sp"
+                    android:layout_marginBottom="8dp"/>
+
+                <!-- Grid interno para Totales/Descuentos/Líquido -->
+                <GridLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:columnCount="2">
+
+                    <!-- Total $ del mes -->
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_columnWeight="1"
+                        android:text="Total $ del mes" />
+
+                    <TextView
+                        android:id="@+id/tvTotalMesPesos"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textStyle="bold"
+                        android:text="$0" />
+
+                    <!-- Gasolina -->
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_columnWeight="1"
+                        android:text="Impuesto (15%)" />
+
+                    <TextView
+                        android:id="@+id/tvImpuesto"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textStyle="bold"
+                        android:text="$0" />
+
+                    <!-- Impuesto -->
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_columnWeight="1"
+                        android:text="Gasolina (10%)" />
+
+                    <TextView
+                        android:id="@+id/tvGasolina"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textStyle="bold"
+                        android:text="$0" />
+
+                    <!-- Total líquido -->
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_columnWeight="1"
+                        android:text="Total líquido" />
+
+                    <TextView
+                        android:id="@+id/tvLiquido"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textStyle="bold"
+                        android:text="$0" />
+                </GridLayout>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
 
     </LinearLayout>
 </ScrollView>

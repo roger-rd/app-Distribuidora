@@ -23,8 +23,18 @@
         <activity
             android:name=".ui.MonthlySummaryActivity"
             android:exported="false" />
-
-
+        <activity
+            android:name=".ui.ParametrosCalculosActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.BackupActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.BencinaActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.HistorialBencinaActivity"
+            android:exported="false" />
     </application>
 
 </manifest>

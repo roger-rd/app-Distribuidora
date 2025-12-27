@@ -27,6 +27,10 @@ public class MainActivity extends AppCompatActivity {
     private DrawerLayout drawer;
     private ActionBarDrawerToggle toggle;
 
+    private BonoAdapter bonoAdapter;
+
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,15 +95,25 @@ public class MainActivity extends AppCompatActivity {
                 catch (android.content.ActivityNotFoundException e) {
                     Toast.makeText(this, "No hay cliente de correo instalado", Toast.LENGTH_SHORT).show();
                 }
+            } else if (id == R.id.nav_calculo) {
+                startActivity(new Intent(this, ParametrosCalculosActivity.class));
+            } else if (id == R.id.nav_backup) {
+                startActivity(new Intent(this, BackupActivity.class));
+            }else if (id == R.id.nav_bencina) {
+                startActivity(new Intent(this, BencinaActivity.class));
+            }else if (id == R.id.nav_historial_bencina) {
+                startActivity(new Intent(this, HistorialBencinaActivity.class));
             }
             drawer.closeDrawers();
             return true;
         });
 
 
-        vb.etKm.setKeyListener(android.text.method.DigitsKeyListener.getInstance("0123456789,"));
-        vb.etSg.setKeyListener(android.text.method.DigitsKeyListener.getInstance("0123456789,"));
-        vb.etVentana.setKeyListener(android.text.method.DigitsKeyListener.getInstance("0123456789,"));
+
+
+        vb.etKm.setKeyListener(android.text.method.DigitsKeyListener.getInstance("0123456789,."));
+        vb.etSg.setKeyListener(android.text.method.DigitsKeyListener.getInstance("0123456789,."));
+        vb.etVentana.setKeyListener(android.text.method.DigitsKeyListener.getInstance("0123456789,."));
 
         // cargar local guardado si existe
         String saveLocal = cl.rdrp.planilla_shopper.util.Prefs.getLocal(this);
@@ -127,7 +141,48 @@ public class MainActivity extends AppCompatActivity {
         vb.rvRegistros.setAdapter(adapter);
         vb.rvRegistros.setLayoutManager(new androidx.recyclerview.widget.LinearLayoutManager(this));
         cargarListaDelDia();
+
+        // Lista de bonos del día
+        bonoAdapter = new BonoAdapter(bono -> {
+            // diálogo de confirmación
+            new com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
+                    .setTitle("Eliminar bono")
+                    .setMessage(
+                            "¿Eliminar este bono de $" + bono.monto +
+                                    (bono.descripcion != null && !bono.descripcion.trim().isEmpty()
+                                            ? " (" + bono.descripcion + ")"
+                                            : "") + "?"
+                    )
+                    .setPositiveButton("Eliminar", (d, w) -> {
+                        java.util.concurrent.Executors.newSingleThreadExecutor()
+                                .execute(() -> {
+                                    cl.rdrp.planilla_shopper.data.AppDatabase
+                                            .get(this)
+                                            .bonoDao()
+                                            .delete(bono);
+
+                                    runOnUiThread(this::cargarListaDelDia);
+                                });
+                    })
+                    .setNegativeButton("Cancelar", null)
+                    .show();
+        });
+
+        vb.rvBonos.setAdapter(bonoAdapter);
+        vb.rvBonos.setLayoutManager(
+                new androidx.recyclerview.widget.LinearLayoutManager(this)
+        );
+
+        vb.rvBonos.setAdapter(bonoAdapter);
+        vb.rvBonos.setLayoutManager(
+                new androidx.recyclerview.widget.LinearLayoutManager(this)
+        );
+
+        // Botón "Agregar bono"
+                vb.btnAgregarBono.setOnClickListener(v -> mostrarDialogoBono());
     }
+
+
 
     // === DatePicker estilo Dashboard ===
     private void mostrarDatePicker() {
@@ -150,14 +205,29 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void cargarListaDelDia() {
-        String iso = s(vb.etFecha.getText());      // ahora etFecha está en yyyy-MM-dd
-        String legacy = toLegacy(iso);             // compat dd/MM/yyyy
+        String iso = s(vb.etFecha.getText());      // yyyy-MM-dd
+        String legacy = toLegacy(iso);             // dd/MM/yyyy compat
+
         Executors.newSingleThreadExecutor().execute(() -> {
+            // registros normales
             java.util.List<cl.rdrp.planilla_shopper.data.Registro> items =
-                    cl.rdrp.planilla_shopper.data.AppDatabase.get(this).registroDao().listByFechaCompat(iso, legacy);
-            runOnUiThread(() -> adapter.submit(items));
+                    cl.rdrp.planilla_shopper.data.AppDatabase.get(this)
+                            .registroDao()
+                            .listByFechaCompat(iso, legacy);
+
+            // bonos del día
+            java.util.List<cl.rdrp.planilla_shopper.data.BonoExtra> bonos =
+                    cl.rdrp.planilla_shopper.data.AppDatabase.get(this)
+                            .bonoDao()
+                            .listByFecha(iso);
+
+            runOnUiThread(() -> {
+                adapter.submit(items);
+                bonoAdapter.submit(bonos);
+            });
         });
     }
+
     private static String toLegacy(String iso) {
         if (iso == null) return "";
         iso = iso.trim();
@@ -277,7 +347,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // Campos obligatorios
-        if (fecha.isEmpty() || local.isEmpty() || sku.isEmpty() || kmS.isEmpty() || sgS.isEmpty() || ventanaS.isEmpty()) {
+        if (fecha.isEmpty() || local.isEmpty() || sku.isEmpty() || kmS.isEmpty() || sgS.isEmpty() || ventanaS.isEmpty() || cantS.isEmpty()) {
             Toast.makeText(this, "Completa todos los campos", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -363,4 +433,72 @@ public class MainActivity extends AppCompatActivity {
         java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault());
         return sdf.format(new java.util.Date());
     }
+
+
+    // === MODELO CONTENEDOR DE BACKUP ===
+    public static class BackupData {
+        public java.util.List<Registro> registros;
+    }
+
+    private void mostrarDialogoBono() {
+        android.view.LayoutInflater inf = android.view.LayoutInflater.from(this);
+        android.view.View view = inf.inflate(R.layout.dialog_bono_extra, null);
+
+        android.widget.EditText etSg   = view.findViewById(R.id.etBonoSg);
+        android.widget.EditText etDesc = view.findViewById(R.id.etBonoDescripcion);
+        android.widget.EditText etMonto= view.findViewById(R.id.etBonoMonto);
+
+        new com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
+                .setTitle("Agregar bono")
+                .setView(view)
+                .setPositiveButton("Guardar", (d, w) -> {
+                    String fecha = s(vb.etFecha.getText()); // día actual
+                    String sg    = s(etSg.getText());
+                    String desc  = s(etDesc.getText());
+                    String montoS= s(etMonto.getText());
+
+                    if (fecha.isEmpty() || montoS.isEmpty()) {
+                        android.widget.Toast.makeText(this,
+                                "Ingresa al menos el monto", android.widget.Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    int monto;
+                    try {
+                        monto = Integer.parseInt(montoS.replaceAll("[^0-9]", ""));
+                    } catch (NumberFormatException e) {
+                        android.widget.Toast.makeText(this,
+                                "Monto inválido", android.widget.Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    cl.rdrp.planilla_shopper.data.BonoExtra b =
+                            new cl.rdrp.planilla_shopper.data.BonoExtra();
+                    b.fecha = fecha;
+                    b.sg = sg;
+                    b.descripcion = desc;
+                    b.monto = monto;
+
+                    java.util.concurrent.Executors.newSingleThreadExecutor()
+                            .execute(() -> {
+                                cl.rdrp.planilla_shopper.data.AppDatabase
+                                        .get(this).bonoDao().insert(b);
+
+                                runOnUiThread(() -> {
+                                    android.widget.Toast.makeText(this,
+                                            "Bono guardado", android.widget.Toast.LENGTH_SHORT).show();
+                                    cargarListaDelDia();  // refrescar listas
+                                });
+                            });
+                })
+                .setNegativeButton("Cancelar", null)
+                .show();
+    }
+
+
 }
+
+
+
+
+

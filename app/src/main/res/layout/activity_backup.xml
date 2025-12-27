@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:gravity="center_horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/tvTituloBackup"
+        android:text="Copia de seguridad"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="24dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnExportar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Exportar datos"
+        app:icon="@android:drawable/ic_menu_save"
+        app:iconPadding="8dp"
+        android:layout_marginBottom="16dp" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnImportar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Importar datos"
+        app:icon="@android:drawable/ic_menu_upload"
+        app:iconPadding="8dp" />
+
+</LinearLayout>

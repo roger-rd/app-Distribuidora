@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    android:background="@color/blue_background">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <!-- TÍTULO -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Registro de bencina"
+            android:textColor="@color/blue_onBackground"
+            android:textStyle="bold"
+            android:textSize="22sp"
+            android:layout_marginBottom="16dp" />
+
+        <!-- BENCINERA -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Bencinera"
+            android:textColor="@color/blue_onBackground"
+            android:textStyle="bold"
+            android:layout_marginBottom="6dp" />
+
+        <Spinner
+            android:id="@+id/spBencinera"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:background="@color/blue_surface" />
+
+        <!-- KM -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Kilómetros"
+            android:textColor="@color/blue_onBackground"
+            android:textStyle="bold"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="6dp" />
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:weightSum="2">
+
+            <EditText
+                android:id="@+id/etKmAnterior"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="48dp"
+                android:hint="KM anterior"
+                android:textColor="@color/blue_onBackground"
+                android:background="@color/blue_surface"
+                android:inputType="number" />
+
+            <View android:layout_width="8dp" android:layout_height="0dp"/>
+
+            <EditText
+                android:id="@+id/etKmActual"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="48dp"
+                android:hint="KM actual"
+                android:textColor="@color/blue_onBackground"
+                android:background="@color/blue_surface"
+                android:inputType="number" />
+        </LinearLayout>
+
+        <!-- TIPO DE BENCINA -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Tipo de bencina"
+            android:textColor="@color/blue_onBackground"
+            android:textStyle="bold"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="6dp" />
+
+        <Spinner
+            android:id="@+id/spTipoBencina"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:background="@color/blue_surface" />
+
+        <!-- VALOR / LITROS -->
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:weightSum="2"
+            android:layout_marginTop="20dp">
+
+            <EditText
+                android:id="@+id/etValor"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="48dp"
+                android:hint="Valor"
+                android:textColor="@color/blue_onBackground"
+                android:background="@color/blue_surface"
+                android:inputType="numberDecimal" />
+
+            <View android:layout_width="8dp" android:layout_height="0dp"/>
+
+            <EditText
+                android:id="@+id/etLitros"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="48dp"
+                android:hint="Litros"
+                android:textColor="@color/blue_onBackground"
+                android:background="@color/blue_surface"
+                android:inputType="numberDecimal" />
+        </LinearLayout>
+
+        <!-- RESUMEN -->
+        <TextView
+            android:id="@+id/tvResumen"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Resumen:"
+            android:textColor="@color/blue_onSurface"
+            android:padding="18dp"
+            android:background="@color/blue_surface"
+            android:elevation="3dp"
+            android:layout_marginTop="25dp"
+            android:textSize="16sp" />
+
+        <!-- BOTÓN -->
+        <Button
+            android:id="@+id/btnGuardarBencina"
+            android:layout_width="match_parent"
+            android:layout_height="54dp"
+            android:text="Guardar registro"
+            android:textColor="@color/blue_onPrimary"
+            android:backgroundTint="@color/blue_primary"
+            android:layout_marginTop="24dp"
+            android:textStyle="bold" />
+
+    </LinearLayout>
+
+</ScrollView>
