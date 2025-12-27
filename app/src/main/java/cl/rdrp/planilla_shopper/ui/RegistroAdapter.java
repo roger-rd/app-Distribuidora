@@ -69,10 +69,10 @@ public class RegistroAdapter extends RecyclerView.Adapter<RegistroAdapter.VH> {
         long sKm   = Math.round(r.km * VALOR_UNIT_KM); // KM con decimales → pesos
 
         // 💰 bono por km según fecha
-        int bonoKm = Config.calcularBonoKm(r.km, r.fecha);
+        double bonoKm = Config.calcularBonoKm(r.km, r.fecha);
 
         // total ya incluye el bono
-        long total = (long) base + sSku + sKm + bonoKm;
+        double total = (long) base + sSku + sKm + bonoKm;
 
         // ===== Bind a la UI =====
         h.titulo.setText("SG: " + r.sg);

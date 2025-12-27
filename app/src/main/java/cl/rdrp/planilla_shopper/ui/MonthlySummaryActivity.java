@@ -3,6 +3,8 @@ package cl.rdrp.planilla_shopper.ui;
 import static cl.rdrp.planilla_shopper.util.Config.VALOR_UNIT_KM;
 import static cl.rdrp.planilla_shopper.util.Config.VALOR_UNIT_SKU;
 import static cl.rdrp.planilla_shopper.util.Config.basePorSku;
+import static cl.rdrp.planilla_shopper.util.Config.calcularBonoKm;
+
 
 import android.app.DatePickerDialog;
 import android.os.Bundle;
@@ -16,6 +18,8 @@ import cl.rdrp.planilla_shopper.data.Registro;
 import cl.rdrp.planilla_shopper.data.RegistroDao;
 import cl.rdrp.planilla_shopper.databinding.ActivityMonthlySummaryBinding;
 import cl.rdrp.planilla_shopper.data.BonoDao;
+import cl.rdrp.planilla_shopper.data.CombustibleDao;
+
 
 public class MonthlySummaryActivity extends AppCompatActivity {
 
@@ -23,6 +27,8 @@ public class MonthlySummaryActivity extends AppCompatActivity {
     private final Executor exec = Executors.newSingleThreadExecutor();
     private RegistroDao dao;
     private BonoDao bonoDao;
+
+    private CombustibleDao combustibleDao;
 
     private final NumberFormat clp = NumberFormat.getCurrencyInstance(new Locale("es", "CL"));
 
@@ -44,6 +50,7 @@ public class MonthlySummaryActivity extends AppCompatActivity {
         }
         dao = AppDatabase.get(this).registroDao();
         bonoDao = AppDatabase.get(this).bonoDao();
+        combustibleDao = AppDatabase.get(this).combustibleDao();
 
         Calendar c = Calendar.getInstance();
         vb.tvMes.setText(formatoMes(c));
@@ -76,13 +83,14 @@ public class MonthlySummaryActivity extends AppCompatActivity {
             List<Registro> items = dao.listByRangoFechas(desde, hasta);
 
             // ✅ BONOS DEL MES (desde tabla bonos)
-            long bonos = bonoDao.sumBonosRango(desde, hasta);
+            long bonosDB = bonoDao.sumBonosRango(desde, hasta);
 
             int pedidosMes = items.size();
             Set<String> dias = new HashSet<>();
             int totalSku = 0;
             double totalKm = 0.0;
             long totalMes$ = 0; // total de registros (sin bonos)
+            long bonoKm$ = 0;
 
             for (Registro r : items) {
                 dias.add(r.fecha);
@@ -94,12 +102,17 @@ public class MonthlySummaryActivity extends AppCompatActivity {
                 int base = basePorSku(skuQty);
                 int sSku = skuQty * VALOR_UNIT_SKU;
                 long sKm = Math.round(r.km * VALOR_UNIT_KM);
+                bonoKm$ += calcularBonoKm(r.km, r.fecha);
 
                 totalMes$ += base + sSku + sKm;
             }
 
             // ✅ total final incluyendo bonos (una sola vez, fuera del for)
+            long bonos = bonosDB + bonoKm$; // ✅ bonos manuales + bono km automático
+
             long totalConBonos$ = totalMes$ + bonos;
+            double bencinaReal = combustibleDao.sumTotalPagadoRango(desde , hasta);
+            int recargaMes = combustibleDao.countRecargasRango(desde , hasta);
 
             int diasTrabajados = Math.max(1, dias.size());
             int promPedidosDia = Math.round(pedidosMes / (float) diasTrabajados);
@@ -107,7 +120,7 @@ public class MonthlySummaryActivity extends AppCompatActivity {
             long promedioDiario$ = Math.round(totalConBonos$ / (double) diasTrabajados);
 
             // ✅ Descuentos y líquido en base al total con bonos
-            double descGasolina = totalConBonos$ * DESCUENTO_GASOLINA;
+            double descGasolina = bencinaReal;
             double descImpuesto = totalConBonos$ * DESCUENTO_IMPUESTO;
             double liquido = totalConBonos$ - descGasolina - descImpuesto;
 

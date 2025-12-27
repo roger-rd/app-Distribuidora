@@ -54,4 +54,17 @@ public interface CombustibleDao {
 
     @Query("SELECT * FROM combustible ORDER BY id DESC LIMIT 1")
     Combustible getLast();
+
+    // ✅ listar por rango de fechas (para semana, quincena, etc.)
+    @Query("SELECT * FROM combustible WHERE fecha BETWEEN :desde AND :hasta ORDER BY fecha DESC, id DESC")
+    List<Combustible> listByRango(String desde, String hasta);
+
+    // ✅ sumar total pagado por rango (esto es la bencina real)
+    @Query("SELECT IFNULL(SUM(totalPagado),0) FROM combustible WHERE fecha BETWEEN :desde AND :hasta")
+    double sumTotalPagadoRango(String desde, String hasta);
+
+    // ✅ contar recargas por rango
+    @Query("SELECT COUNT(*) FROM combustible WHERE fecha BETWEEN :desde AND :hasta")
+    int countRecargasRango(String desde, String hasta);
+
 }

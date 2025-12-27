@@ -129,8 +129,8 @@ public class DashboardActivity extends AppCompatActivity {
                 long sKm    = Math.round(r.km * VALOR_UNIT_KM);
 
                 // bono km según fecha (solo domingo, lunes, martes)
-                int bonoKm = Config.calcularBonoKm(r.km, r.fecha);
-                long total = (long) base + sSku + sKm + bonoKm; // mismo total que en las cards
+                double bonoKm = Config.calcularBonoKm(r.km, r.fecha);
+                double total = (long) base + sSku + sKm + bonoKm; // mismo total que en las cards
 
                 totalDia     += total;
                 totalKm      += r.km;

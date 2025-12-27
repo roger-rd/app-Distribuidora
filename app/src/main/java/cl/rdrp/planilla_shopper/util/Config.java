@@ -7,7 +7,7 @@ public class Config {
 
     public static final int VALOR_UNIT_SKU = 61;   // $ por SKU
     public static final double VALOR_UNIT_KM = 234.0; // $ por KM (KM es double)
-    public static final int BONO_POR_KM = 100;
+    public static final Double BONO_POR_KM_DOM_LUN_MAR = 100.0; // BONO DOMINGO, LUNES, MARTES
 
     public static int basePorSku(int skuQty) {
         if (skuQty <= 0) return 0;
@@ -23,9 +23,9 @@ public class Config {
 
 
     // Calcula el bono en pesos
-    public static int calcularBonoKm(double km, String fechaIso) {
-        if (km <= 0) return 0;
-        if (fechaIso == null || fechaIso.trim().isEmpty()) return 0;
+    public static Double calcularBonoKm(double km, String fechaIso) {
+        if (km <= 0) return 0.0;
+        if (fechaIso == null || fechaIso.trim().isEmpty()) return 0.0;
 
         try {
             java.text.SimpleDateFormat sdf =
@@ -42,13 +42,13 @@ public class Config {
                             day == java.util.Calendar.MONDAY ||
                             day == java.util.Calendar.TUESDAY;
 
-            if (!aplica) return 0;
+            if (!aplica) return 0.0;
 
             // $100 por km recorrido
-            return (int) Math.round(km * 100.0);
+            return (double) Math.round(km * BONO_POR_KM_DOM_LUN_MAR);
 
         } catch (Exception e) {
-            return 0; // si falla el parseo, mejor no dar bono
+            return 0.0; // si falla el parseo, mejor no dar bono
         }
     }
 
